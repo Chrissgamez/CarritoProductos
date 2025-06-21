@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using ProductsService.Services;
+using System.Net.Http.Json;
 
 namespace ProductsService.Controllers;
 
@@ -7,17 +7,18 @@ namespace ProductsService.Controllers;
 [Route("api/products")]
 public class ProductsController : ControllerBase
 {
-    private readonly ProductService _service;
+    private readonly HttpClient _httpClient;
+    private readonly string _externalUrl = "https://fakestoreapi.com/products";
 
-    public ProductsController(ProductService service)
+    public ProductsController(HttpClient httpClient)
     {
-        _service = service;
+        _httpClient = httpClient;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var products = await _service.GetAllAsync();
+        var products = await _httpClient.GetFromJsonAsync<object>(_externalUrl);
         return Ok(products);
     }
 }
